@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Healthcare Appointment System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ========================= */
+/*   MODERN BACKGROUND UI    */
+/* ========================= */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+
+    /* Beautiful Gradient Background */
+    background: linear-gradient(135deg, #4f46e5, #0ea5e9, #06b6d4);
+    background-size: 300% 300%;
+    animation: gradientMove 10s infinite alternate;
+}
+
+@keyframes gradientMove {
+    0% { background-position: left; }
+    100% { background-position: right; }
+}
+
+/* Floating Circles */
+body::before, body::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    filter: blur(60px);
+}
+body::before { top: 10%; left: 5%; }
+body::after { bottom: 10%; right: 5%; }
+
+
+/* ========================= */
+/*     CARD (Glass Effect)   */
+/* ========================= */
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 18px;
+
+    /* Glassmorphism */
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    color: white;
+}
+
+h2, h3, p, th, td, label {
+    color: #ffffff;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+/* ========================= */
+/*      FORM FIELDS          */
+/* ========================= */
+input, select, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    margin-bottom: 12px;
+
+    border-radius: 8px;
+    border: none;
+    font-size: 15px;
+}
+
+input, select {
+    background: rgba(255,255,255,0.75);
+    color: #000;
+}
+
+/* ========================= */
+/*         BUTTONS           */
+/* ========================= */
+button {
+    background: #10b981;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+button:hover {
+    background: #059669;
+    transform: scale(1.03);
+}
+
+/* Action Buttons */
+.edit-btn {
+    background: #f59e0b;
+}
+.cancel-btn {
+    background: #ef4444;
+}
+
+/* ========================= */
+/*         TABLE             */
+/* ========================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+}
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Healthcare Appointment System</h2>
+    <p>Book, search, cancel and manage appointments</p>
+
+    <!-- Booking Form -->
+    <h3>Book Appointment</h3>
+    <div>
+        <label>Patient Name</label>
+        <input type="text" id="patient" placeholder="Patient Name">
+
+        <label>Doctor Name</label>
+        <input type="text" id="doctor" placeholder="Doctor Name">
+
+        <label>Date</label>
+        <input type="date" id="date">
+
+        <label>Time</label>
+        <input type="time" id="time">
+
+        <button onclick="bookAppointment()">Book Appointment</button>
+    </div>
+
+    <hr style="border-color: rgba(255,255,255,0.4)">
+
+    <!-- Search -->
+    <h3>Search Appointments</h3>
+    <input type="text" id="search" placeholder="Search by patient or doctor..." onkeyup="renderAppointments()">
+
+    <!-- Appointment Table -->
+    <table id="apptTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+// ------------------------------
+// Local Storage for Demo
+// ------------------------------
+let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+
+// Save to storage
+function saveData() {
+    localStorage.setItem("appointments", JSON.stringify(appointments));
+}
+
+// ------------------------------
+// Book Appointment
+// ------------------------------
+function bookAppointment() {
+    let patient = document.getElementById("patient").value;
+    let doctor = document.getElementById("doctor").value;
+    let date = document.getElementById("date").value;
+    let time = document.getElementById("time").value;
+
+    if (!patient || !doctor || !date || !time) {
+        alert("All fields are required!");
+        return;
+    }
+
+    let id = appointments.length ? appointments[appointments.length - 1].id + 1 : 1;
+
+    appointments.push({ id, patient, doctor, date, time });
+    saveData();
+    renderAppointments();
+
+    alert("Appointment booked successfully!");
+
+    document.getElementById("patient").value = "";
+    document.getElementById("doctor").value = "";
+    document.getElementById("date").value = "";
+    document.getElementById("time").value = "";
+}
+
+// ------------------------------
+// Render Table
+// ------------------------------
+function renderAppointments() {
+    let searchValue = document.getElementById("search").value.toLowerCase();
+    let tbody = document.querySelector("#apptTable tbody");
+    tbody.innerHTML = "";
+
+    appointments
+        .filter(a =>
+            a.patient.toLowerCase().includes(searchValue) ||
+            a.doctor.toLowerCase().includes(searchValue)
+        )
+        .forEach(appt => {
+            let row = `
+                <tr>
+                    <td>${appt.id}</td>
+                    <td>${appt.patient}</td>
+                    <td>${appt.doctor}</td>
+                    <td>${appt.date}</td>
+                    <td>${appt.time}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editAppointment(${appt.id})">Edit</button>
+                        <button class="action-btn cancel-btn" onclick="cancelAppointment(${appt.id})">Cancel</button>
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+}
+
+// ------------------------------
+// Cancel Appointment
+// ------------------------------
+function cancelAppointment(id) {
+    if (!confirm("Are you sure you want to cancel this appointment?")) return;
+
+    appointments = appointments.filter(a => a.id !== id);
+    saveData();
+    renderAppointments();
+    alert("Appointment cancelled.");
+}
+
+// ------------------------------
+// Edit Appointment
+// ------------------------------
+function editAppointment(id) {
+    let appt = appointments.find(a => a.id === id);
+
+    let newDate = prompt("Enter new date (YYYY-MM-DD):", appt.date);
+    let newTime = prompt("Enter new time (HH:MM):", appt.time);
+
+    if (!newDate || !newTime) return alert("Invalid input!");
+
+    appt.date = newDate;
+    appt.time = newTime;
+
+    saveData();
+    renderAppointments();
+
+    alert("Appointment rescheduled successfully!");
+}
+
+// Initial Display
+renderAppointments();
+</script>
+
+</body>
+</html>
