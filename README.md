@@ -47,35 +47,12 @@ Healthcare-Appointment-System/
 │── style.css
 │── script.js
 │── README.md
-└── screenshots/
-      ├── screenshot1.png
-      ├── screenshot2.png
-      ├── screenshot3.png
-
-📸 Screenshots
-Figure 1: Homepage – Appointment Booking Form
-![Homepage](./screenshots/screenshot1.png)
-
-
-Displays the form for entering patient name, doctor name, date, and time to book an appointment.
-
-Figure 2: Search & Appointment Table View
-![Search](./screenshots/screenshot2.png)
-
-
-Shows the search feature and how saved appointments are displayed with Edit and Cancel buttons.
-
-Figure 3: Final Working Output with Multiple Appointments
-![Final Output](./screenshots/screenshot3.png)
-
-
-Demonstrates the fully functional system with multiple booked appointments and complete functionality.
 
 🌐 Deployment
 
 This project is hosted using GitHub Pages.
 
-🔗 Live Link: (Add your GitHub Pages URL here after deployment)
+🔗 Live Link: (https://hariss0606.github.io/Healthcare-Appointment-System/)
 
 🧠 Learning Outcomes
 
